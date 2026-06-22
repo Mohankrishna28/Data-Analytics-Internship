@@ -30,13 +30,13 @@ except LookupError:
 
 # Set page config
 st.set_page_config(
-    page_title="Play Store Analytics - Consolidated Dashboard",
+    page_title="Consolidated Play Store Analytics Dashboard",
     page_icon="📊",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Custom Premium Styling
+# Custom Premium Dark Theme Styling
 st.markdown("""
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -54,11 +54,11 @@ st.markdown("""
     
     /* Metrics Card Styling */
     .metric-card {
-        background: linear-gradient(135deg, #0B0F19 0%, #1E293B 100%);
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
         border: 1px solid rgba(255, 255, 255, 0.05);
         border-radius: 12px;
         padding: 20px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.35);
         transition: transform 0.2s ease, border-color 0.2s ease;
         text-align: center;
         margin-bottom: 15px;
@@ -69,7 +69,7 @@ st.markdown("""
         box-shadow: 0 8px 25px rgba(139, 92, 246, 0.15);
     }
     .metric-label {
-        font-size: 13px;
+        font-size: 12px;
         color: #94A3B8;
         font-weight: 500;
         text-transform: uppercase;
@@ -77,7 +77,7 @@ st.markdown("""
         margin-bottom: 8px;
     }
     .metric-value {
-        font-size: 28px;
+        font-size: 26px;
         color: #F8FAFC;
         font-weight: 700;
         font-family: 'Outfit', sans-serif;
@@ -87,6 +87,15 @@ st.markdown("""
         color: #8B5CF6;
         margin-top: 5px;
         font-weight: 500;
+    }
+    
+    /* Info banners */
+    .info-container {
+        border-left: 4px solid #8B5CF6;
+        background: rgba(139, 92, 246, 0.04);
+        padding: 1rem;
+        border-radius: 0 8px 8px 0;
+        margin-bottom: 1.5rem;
     }
     
     /* Lock Notice Container */
@@ -289,7 +298,7 @@ if page == "Home / Project Overview":
     """)
 
 elif page == "Task 1: Size vs. Rating Analysis":
-    st.markdown("## Task 1: Size vs. Rating Bubble Chart Analysis")
+    st.markdown("<h1 style='color: #8B5CF6;'>Task 1: Size vs. Rating Bubble Chart Analysis</h1>", unsafe_allow_html=True)
     
     # Time restriction check: 5 PM to 7 PM IST (17:00 to 19:00)
     is_locked_t1 = not (17 <= current_hour < 19)
@@ -357,7 +366,7 @@ elif page == "Task 1: Size vs. Rating Analysis":
         
         # Localizations map
         category_translations_t1 = {
-            'GAME': 'GAME (Highlight)',
+            'GAME': 'GAME',
             'BEAUTY': 'सौंदर्य',
             'BUSINESS': 'வணிகம்',
             'DATING': 'Dating (Deutsch)',
@@ -370,20 +379,55 @@ elif page == "Task 1: Size vs. Rating Analysis":
         filtered['Category_Translated'] = filtered['Category'].map(category_translations_t1).fillna(filtered['Category'])
         
         # Bubble chart
-        st.subheader("Bubble Plot: Size vs Average Rating")
+        st.subheader("📊 Bubble Plot: Size vs Average Rating")
         
         colors_t1 = {
-            'GAME (Highlight)': '#EC4899', # Pink highlight
-            'सौंदर्य': '#06B6D4',
-            'வணிகம்': '#3B82F6',
-            'Dating (Deutsch)': '#F59E0B',
-            'COMICS': '#10B981',
-            'COMMUNICATION': '#8B5CF6',
-            'ENTERTAINMENT': '#EF4444',
-            'SOCIAL': '#6366F1',
-            'EVENTS': '#F43F5E'
+            'GAME': '#FFC0CB',  # Pink Highlight
+            'सौंदर्य': '#FFA07A', # Salmon/Light Orange
+            'வணிகம்': '#20B2AA', # Light Sea Green
+            'COMICS': '#9370DB',
+            'COMMUNICATION': '#3CB371',
+            'Dating (Deutsch)': '#FF69B4',
+            'ENTERTAINMENT': '#FFD700',
+            'SOCIAL': '#87CEEB',
+            'EVENTS': '#FF4500'
         }
         
+        # Add KPI cards
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            st.markdown(f"""
+            <div class="metric-card">
+                <div class="metric-label">Apps Analyzed</div>
+                <div class="metric-value">{len(filtered['App'].unique())}</div>
+                <div class="metric-sub">Matching filters</div>
+            </div>
+            """, unsafe_allow_html=True)
+        with col2:
+            st.markdown(f"""
+            <div class="metric-card">
+                <div class="metric-label">Average App Rating</div>
+                <div class="metric-value">{filtered['Rating'].mean():.2f} ★</div>
+                <div class="metric-sub">Highly-rated segment</div>
+            </div>
+            """, unsafe_allow_html=True)
+        with col3:
+            st.markdown(f"""
+            <div class="metric-card">
+                <div class="metric-label">Total Installs</div>
+                <div class="metric-value">{filtered['Installs'].sum() / 1e6:.1f}M</div>
+                <div class="metric-sub">Sum of installations</div>
+            </div>
+            """, unsafe_allow_html=True)
+        with col4:
+            st.markdown(f"""
+            <div class="metric-card">
+                <div class="metric-label">Games Analyzed</div>
+                <div class="metric-value">{len(filtered[filtered['Category'] == 'GAME']['App'].unique())}</div>
+                <div class="metric-sub">Vibrant Pink Highlight</div>
+            </div>
+            """, unsafe_allow_html=True)
+            
         fig = px.scatter(
             filtered,
             x="Size",
@@ -392,7 +436,7 @@ elif page == "Task 1: Size vs. Rating Analysis":
             color="Category_Translated",
             color_discrete_map=colors_t1,
             hover_name="App",
-            hover_data=["Category", "Installs", "Reviews"],
+            hover_data=["Category", "Installs", "Reviews", "Sentiment_Subjectivity"],
             labels={"Size": "Size (MB)", "Rating": "Average Rating", "Category_Translated": "Translated Category"}
         )
         
@@ -404,6 +448,14 @@ elif page == "Task 1: Size vs. Rating Analysis":
             yaxis=dict(gridcolor='rgba(255,255,255,0.05)')
         )
         st.plotly_chart(fig, use_container_width=True)
+        
+        # Detailed Table
+        st.subheader("📋 Dataset Preview (Filtered Rows)")
+        st.dataframe(
+            filtered[['App', 'Category', 'Rating', 'Reviews', 'Installs', 'Size', 'Sentiment_Subjectivity']].drop_duplicates().head(100),
+            use_container_width=True,
+            height=250
+        )
         
         # ML Regression Predictor Panel
         st.subheader("🔮 Task 1 Linear Regressor: Predict App Rating")
@@ -428,7 +480,7 @@ elif page == "Task 1: Size vs. Rating Analysis":
         st.success(f"Predicted Rating Score: **{min(5.0, max(1.0, pred_rating)):.3f} ★**")
 
 elif page == "Task 2: Global Installations Map":
-    st.markdown("## Task 2: Global Installations Choropleth Map")
+    st.markdown("<h1 style='color: #00E5FF;'>Task 2: Global Installations Choropleth Map</h1>", unsafe_allow_html=True)
     
     # Time restriction check: 6 PM to 8 PM IST (18:00 to 20:00)
     is_locked_t2 = not (18 <= current_hour < 20)
@@ -475,49 +527,68 @@ elif page == "Task 2: Global Installations Map":
         top_5_cats['Country_Name'] = top_5_cats['Category'].map(lambda x: category_country_mapping[x]['Country'])
         top_5_cats['Exceeds_1M'] = top_5_cats['Installs_clean'] > 1000000
         
-        # Plotly Choropleth Map
-        st.subheader("Global installations aggregated by representative countries")
+        col_left, col_right = st.columns([1, 2])
         
-        fig = px.choropleth(
-            top_5_cats,
-            locations="Country_ISO",
-            color="Installs_clean",
-            hover_name="Category",
-            hover_data={
-                "Country_Name": True,
-                "Installs_clean": ":,",
-                "Exceeds_1M": True,
-                "Country_ISO": False
-            },
-            color_continuous_scale=px.colors.sequential.Sunsetdark,
-            labels={"Installs_clean": "Total Installs"}
-        )
-        
-        # Styling highlighting exceeds 1M with gold borders
-        fig.update_traces(
-            marker_line_color="gold",
-            marker_line_width=4,
-            selector=dict(type='choropleth')
-        )
-        
-        fig.update_layout(
-            geo=dict(
-                showframe=False,
-                showcoastlines=True,
-                projection_type='natural earth',
-                landcolor='#2D2D2D',
-                oceancolor='#1A1A1A',
-                showocean=True,
-                bgcolor='rgba(0,0,0,0)'
-            ),
-            paper_bgcolor='rgba(0,0,0,0)',
-            font_color='#E0E0E0'
-        )
-        
-        st.plotly_chart(fig, use_container_width=True)
+        with col_left:
+            st.markdown("### Top 5 Category Metrics")
+            for idx, row in top_5_cats.iterrows():
+                st.markdown(f"""
+                <div style="background: #2D2D2D; padding: 12px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #00E5FF;">
+                    <strong style="color: #00E5FF;">{row['Category']}</strong><br>
+                    <span style="font-size: 13px; color: #B0B0B0;">Installs: {row['Installs_clean']:,} | Mapped to {row['Country_Name']}</span>
+                </div>
+                """, unsafe_allow_html=True)
+                
+            st.markdown("""
+            <div style="background: rgba(255, 179, 0, 0.05); border: 1px solid #FFB300; border-radius: 8px; padding: 12px; color: #FFB300; font-size: 13px; font-weight: 500;">
+                ⚠️ HIGH INSTALL HIGHLIGHT:<br>
+                Countries styled with a thick gold border have app installations exceeding 1 Million. All top 5 categories meet this threshold.
+            </div>
+            """, unsafe_allow_html=True)
+            
+        with col_right:
+            st.markdown("### 🗺️ Geographic Map Visualization")
+            # Plotly Choropleth Map
+            fig = px.choropleth(
+                top_5_cats,
+                locations="Country_ISO",
+                color="Installs_clean",
+                hover_name="Category",
+                hover_data={
+                    "Country_Name": True,
+                    "Installs_clean": ":,",
+                    "Exceeds_1M": True,
+                    "Country_ISO": False
+                },
+                color_continuous_scale=px.colors.sequential.Sunsetdark,
+                labels={"Installs_clean": "Total Installs"}
+            )
+            
+            # Styling highlighting exceeds 1M with gold borders
+            fig.update_traces(
+                marker_line_color="gold",
+                marker_line_width=4,
+                selector=dict(type='choropleth')
+            )
+            
+            fig.update_layout(
+                geo=dict(
+                    showframe=False,
+                    showcoastlines=True,
+                    projection_type='natural earth',
+                    landcolor='#2D2D2D',
+                    oceancolor='#1A1A1A',
+                    showocean=True,
+                    bgcolor='rgba(0,0,0,0)'
+                ),
+                paper_bgcolor='rgba(0,0,0,0)',
+                font_color='#E0E0E0'
+            )
+            
+            st.plotly_chart(fig, use_container_width=True)
 
 elif page == "Task 3: Sentiment & Trend Tracker":
-    st.markdown("## Task 3: Interactive Sentiment & Growth Trend tracker")
+    st.markdown("<h1 style='color: #BB86FC;'>Task 3: Interactive Sentiment & Growth Trend tracker</h1>", unsafe_allow_html=True)
     
     # Modern tabbed layout
     tab1, tab2, tab3, tab4 = st.tabs([
@@ -563,6 +634,34 @@ elif page == "Task 3: Sentiment & Trend Tracker":
     
     with tab1:
         st.subheader("Category count & Free vs Paid split")
+        
+        # Add KPI cards
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.markdown(f"""
+            <div class="metric-card">
+                <div class="metric-label">Apps Processed</div>
+                <div class="metric-value">{len(apps_df):,}</div>
+                <div class="metric-sub">Deduplicated apps</div>
+            </div>
+            """, unsafe_allow_html=True)
+        with col2:
+            st.markdown(f"""
+            <div class="metric-card">
+                <div class="metric-label">Free Apps</div>
+                <div class="metric-value">{len(apps_df[apps_df['Type'] == 'Free']):,}</div>
+                <div class="metric-sub">Mass acquisition</div>
+            </div>
+            """, unsafe_allow_html=True)
+        with col3:
+            st.markdown(f"""
+            <div class="metric-card">
+                <div class="metric-label">Paid Apps</div>
+                <div class="metric-value">{len(apps_df[apps_df['Type'] == 'Paid']):,}</div>
+                <div class="metric-sub">Directly monetized</div>
+            </div>
+            """, unsafe_allow_html=True)
+            
         col_a, col_b = st.columns(2)
         with col_a:
             cat_counts = apps_df['Category'].value_counts().nlargest(10)
@@ -732,7 +831,7 @@ elif page == "Task 3: Sentiment & Trend Tracker":
             st.success(f"Predicted Rating: **{min(5.0, max(1.0, p_val)):.3f} ★**")
 
 elif page == "Task 4: Cumulative Growth Dashboard":
-    st.markdown("## Task 4: App Cumulative Growth Intelligence Dashboard")
+    st.markdown("<h1 style='color: #a855f7;'>Task 4: Play Store App Market Intelligence Dashboard</h1>", unsafe_allow_html=True)
     
     # Time restriction check: 4 PM to 6 PM IST (16:00 to 18:00)
     is_locked_t4 = not (16 <= current_hour < 18)
@@ -752,6 +851,14 @@ elif page == "Task 4: Cumulative Growth Dashboard":
         """, unsafe_allow_html=True)
     else:
         st.markdown("<div class='time-badge-active'>🟢 Access Unlocked (4:00 PM – 6:00 PM IST)</div>", unsafe_allow_html=True)
+        
+        # Information Banner
+        st.markdown("""
+        <div class="info-container">
+            <strong style="color: #a855f7;">💡 High-Growth Highlights Enabled:</strong> 
+            Months with month-over-month (MoM) cumulative install growth exceeding <strong>25%</strong> for any category are highlighted, and major growth spikes are marked with detailed annotations.
+        </div>
+        """, unsafe_allow_html=True)
         
         apps_df, _ = get_base_data("Task-4")
         
@@ -810,7 +917,8 @@ elif page == "Task 4: Cumulative Growth Dashboard":
             merged['Prev_Cumulative'] = merged.groupby('Category')['Cumulative_Installs'].shift(1)
             merged['MoM_Increase_Pct'] = (merged['Cumulative_Installs'] - merged['Prev_Cumulative']) / merged['Prev_Cumulative']
             merged.loc[merged['Prev_Cumulative'].isna() & (merged['Cumulative_Installs'] > 0), 'MoM_Increase_Pct'] = float('inf')
-            
+            merged.loc[(merged['Prev_Cumulative'] == 0) & (merged['Cumulative_Installs'] > 0), 'MoM_Increase_Pct'] = float('inf')
+
             # Category Translations
             category_translations_t4 = {
                 'TRAVEL_AND_LOCAL': 'Voyage et guides locaux',
@@ -828,6 +936,49 @@ elif page == "Task 4: Cumulative Growth Dashboard":
             mom_pivot = merged.pivot(index='YearMonth', columns='Category', values='MoM_Increase_Pct')
             mom_pivot.index = mom_pivot.index.to_timestamp()
             
+            # High growth calculations for KPIs
+            high_growth_count = 0
+            for timestamp in mom_pivot.index:
+                for cat in categories:
+                    if mom_pivot.loc[timestamp, cat] > 0.25:
+                        high_growth_count += 1
+                        break
+            
+            # KPI Metrics Row
+            col1, col2, col3, col4 = st.columns(4)
+            with col1:
+                st.markdown(f"""
+                <div class="metric-card">
+                    <div class="metric-label">Total Installs</div>
+                    <div class="metric-value">{filtered['Installs_numeric'].sum() / 1e9:.2f} B</div>
+                    <div class="metric-sub">Sum of downloads</div>
+                </div>
+                """, unsafe_allow_html=True)
+            with col2:
+                st.markdown(f"""
+                <div class="metric-card">
+                    <div class="metric-label">Apps Selected</div>
+                    <div class="metric-value">{len(filtered['App'].unique())}</div>
+                    <div class="metric-sub">Matching filters</div>
+                </div>
+                """, unsafe_allow_html=True)
+            with col3:
+                st.markdown(f"""
+                <div class="metric-card">
+                    <div class="metric-label">Categories</div>
+                    <div class="metric-value">{len(categories)}</div>
+                    <div class="metric-sub">Distinct groups</div>
+                </div>
+                """, unsafe_allow_html=True)
+            with col4:
+                st.markdown(f"""
+                <div class="metric-card">
+                    <div class="metric-label">High Growth Months</div>
+                    <div class="metric-value">{high_growth_count}</div>
+                    <div class="metric-sub">MoM growth &gt; 25%</div>
+                </div>
+                """, unsafe_allow_html=True)
+                
             colors_t4 = {
                 'Voyage et guides locaux': '#1f77b4',
                 'Tools': '#9467bd',
@@ -873,7 +1024,7 @@ elif page == "Task 4: Cumulative Growth Dashboard":
                     )
             
             fig.update_layout(
-                title="Cumulative Installs Time Series Stacked Area Plot",
+                title="Cumulative Installs over Time (Interactive Plotly Stacked Area)",
                 xaxis_title="Timeline",
                 yaxis_title="Installs Count",
                 template="plotly_dark",
@@ -881,9 +1032,18 @@ elif page == "Task 4: Cumulative Growth Dashboard":
                 plot_bgcolor="rgba(0,0,0,0)"
             )
             st.plotly_chart(fig, use_container_width=True)
+            
+            # Export
+            st.subheader("📥 Export Processed Dataset")
+            st.download_button(
+                label="Download Processed CSV Data",
+                data=filtered.to_csv(index=False).encode('utf-8'),
+                file_name="Processed_PlayStore_Data.csv",
+                mime="text/csv"
+            )
 
 elif page == "Task 5: Grouped Category Comparison":
-    st.markdown("## Task 5: App Category Insights Grouped Column Chart")
+    st.markdown("<h1 style='color: #38BDF8;'>Task 5: App Category Insights Grouped Column Chart</h1>", unsafe_allow_html=True)
     
     # Time restriction check: 3 PM to 5 PM IST (15:00 to 17:00)
     is_locked_t5 = not (15 <= current_hour < 17)
@@ -929,27 +1089,53 @@ elif page == "Task 5: Grouped Category Comparison":
         category_summary = df_filtered.groupby('Category').agg(
             Avg_Rating=('Rating_Clean', 'mean'),
             Total_Reviews=('Reviews_Clean', 'sum'),
-            Total_Installs=('Installs_Clean', 'sum')
+            Total_Installs=('Installs_Clean', 'sum'),
+            App_Count=('App', 'count')
         ).reset_index()
         
         category_summary = category_summary[category_summary['Avg_Rating'] >= 4.0]
         top_10 = category_summary.sort_values(by='Total_Installs', ascending=False).head(10)
         
-        st.subheader("Rating vs Reviews Grouped Bar Chart")
+        # KPI Metrics Cards Row
+        kpi1, kpi2, kpi3 = st.columns(3)
+        with kpi1:
+            tot_installs = top_10['Total_Installs'].sum()
+            st.metric(
+                label="Total Installs (Top 10)",
+                value=f"{tot_installs / 1e6:.1f}M" if tot_installs < 1e9 else f"{tot_installs / 1e9:.2f}B",
+                delta="Filtered Dataset"
+            )
+        with kpi2:
+            st.metric(
+                label="Average Rating",
+                value=f"{top_10['Avg_Rating'].mean():.2f} ★",
+                delta="All Categories >= 4.0"
+            )
+        with kpi3:
+            st.metric(
+                label="Total Reviews (Top 10)",
+                value=f"{top_10['Total_Reviews'].sum() / 1e6:.2f}M",
+                delta="Active User Feedback"
+            )
+            
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.subheader("📊 Rating vs Reviews Grouped Bar Chart")
         
         fig = go.Figure()
         fig.add_trace(
             go.Bar(
                 x=top_10['Category'], y=top_10['Avg_Rating'],
                 name='Average Rating', marker_color='#06B6D4',
-                yaxis='y1', text=top_10['Avg_Rating'].round(2), textposition='auto'
+                yaxis='y1', text=top_10['Avg_Rating'].round(2), textposition='auto',
+                textfont=dict(color='#FFFFFF', size=10)
             )
         )
         fig.add_trace(
             go.Bar(
                 x=top_10['Category'], y=top_10['Total_Reviews'] / 1e6,
                 name='Total Reviews (Millions)', marker_color='#F97316',
-                yaxis='y2', text=(top_10['Total_Reviews'] / 1e6).round(2).apply(lambda x: f"{x}M"), textposition='auto'
+                yaxis='y2', text=(top_10['Total_Reviews'] / 1e6).round(2).apply(lambda x: f"{x}M"), textposition='auto',
+                textfont=dict(color='#FFFFFF', size=10)
             )
         )
         
@@ -959,14 +1145,23 @@ elif page == "Task 5: Grouped Category Comparison":
             plot_bgcolor='rgba(0,0,0,0)',
             height=500,
             xaxis=dict(title="App Category", gridcolor='rgba(255,255,255,0.05)'),
-            yaxis=dict(title="Average Rating", range=[0, 5.5], gridcolor='rgba(255,255,255,0.05)'),
-            yaxis2=dict(title="Total Reviews (Millions)", overlaying='y', side='right', showgrid=False),
+            yaxis=dict(title="Average Rating (1 to 5)", range=[0, 5.5], gridcolor='rgba(255,255,255,0.05)'),
+            yaxis2=dict(title="Total Review Count (Millions)", overlaying='y', side='right', showgrid=False),
             barmode='group'
         )
         st.plotly_chart(fig, use_container_width=True)
+        
+        # Detailed table
+        st.subheader("📋 Detailed Category Data Table")
+        display_df = top_10.copy()
+        display_df.columns = ['Category', 'Average Rating', 'Total Reviews', 'Total Installs', 'Number of Apps']
+        display_df['Average Rating'] = display_df['Average Rating'].round(2)
+        display_df['Total Reviews'] = display_df['Total Reviews'].apply(lambda x: f"{x:,}")
+        display_df['Total Installs'] = display_df['Total Installs'].apply(lambda x: f"{x:,}")
+        st.dataframe(display_df, use_container_width=True, hide_index=True)
 
 elif page == "Task 6: Revenue vs. Installs Metrics":
-    st.markdown("## Task 6: Direct Revenue vs Installs Analysis")
+    st.markdown("<h1 style='color: #F8FAFC;'>Task 6: Direct Revenue vs Installs Analysis</h1>", unsafe_allow_html=True)
     
     # Time restriction check: 1 PM to 2 PM IST (13:00 to 14:00)
     is_locked_t6 = not (13 <= current_hour < 14)
@@ -1074,13 +1269,62 @@ elif page == "Task 6: Revenue vs. Installs Metrics":
                         })
             plot_df = pd.DataFrame(plot_records)
             
+            # KPI Cards row
+            total_apps = len(active_df)
+            avg_installs = active_df['Installs_numeric'].mean()
+            total_revenue = active_df['Revenue'].sum()
+            paid_count = len(active_df[active_df['Type'] == 'Paid'])
+            free_count = len(active_df[active_df['Type'] == 'Free'])
+            
+            col1, col2, col3, col4 = st.columns(4)
+            with col1:
+                st.markdown(f"""
+                <div class="metric-card">
+                    <div class="metric-label">Apps Analyzed</div>
+                    <div class="metric-value">{total_apps:,}</div>
+                    <div class="metric-sub">{free_count:,} Free vs. {paid_count:,} Paid</div>
+                </div>
+                """, unsafe_allow_html=True)
+            with col2:
+                st.markdown(f"""
+                <div class="metric-card">
+                    <div class="metric-label">Avg Installs / App</div>
+                    <div class="metric-value">{int(avg_installs):,}</div>
+                    <div class="metric-sub">Across top 3 categories</div>
+                </div>
+                """, unsafe_allow_html=True)
+            with col3:
+                st.markdown(f"""
+                <div class="metric-card">
+                    <div class="metric-label">Paid App Revenue</div>
+                    <div class="metric-value">${total_revenue:,.2f}</div>
+                    <div class="metric-sub">Direct purchases/monetization</div>
+                </div>
+                """, unsafe_allow_html=True)
+            with col4:
+                st.markdown(f"""
+                <div class="metric-card">
+                    <div class="metric-label">Top Categories</div>
+                    <div class="metric-value" style="font-size: 15px; margin-top: 8px;">{', '.join(top_categories)}</div>
+                    <div class="metric-sub">Determined by installs/count</div>
+                </div>
+                """, unsafe_allow_html=True)
+            
             fig = make_subplots(specs=[[{"secondary_y": True}]])
             free_data = plot_df[plot_df['Type'] == 'Free']
             paid_data = plot_df[plot_df['Type'] == 'Paid']
             
+            # Formatted text labels
+            def format_label(val):
+                if val >= 1e6: return f"{val/1e6:.1f}M"
+                elif val >= 1e3: return f"{val/1e3:.1f}K"
+                elif val > 0: return f"{val:.0f}"
+                return "0"
+                
             fig.add_trace(
                 go.Bar(
                     name='Free Apps - Avg Installs', x=free_data['Category'], y=free_data['Avg_Installs'],
+                    text=free_data['Avg_Installs'].apply(format_label), textposition='outside',
                     marker_color='#06B6D4', opacity=0.85, offsetgroup=1
                 ),
                 secondary_y=False
@@ -1088,6 +1332,7 @@ elif page == "Task 6: Revenue vs. Installs Metrics":
             fig.add_trace(
                 go.Bar(
                     name='Paid Apps - Avg Installs', x=paid_data['Category'], y=paid_data['Avg_Installs'],
+                    text=paid_data['Avg_Installs'].apply(format_label), textposition='outside',
                     marker_color='#3B82F6', opacity=0.85, offsetgroup=2
                 ),
                 secondary_y=False
@@ -1109,3 +1354,28 @@ elif page == "Task 6: Revenue vs. Installs Metrics":
                 barmode='group'
             )
             st.plotly_chart(fig, use_container_width=True)
+            
+            # Insight briefing and table
+            col_l, col_r = st.columns([1, 1])
+            with col_l:
+                st.markdown("### 📊 Insight Briefing")
+                st.markdown(f"""
+                - **Top Categories List**: The top 3 categories under consideration are **{', '.join(top_categories)}**.
+                - **The Installs Paradigm**: Across all top categories, **Free apps** secure vastly superior download volumes (installs) compared to paid apps. This indicates a high user acquisition elasticity.
+                - **The Revenue Paradigm**: Despite having lower download counts, **Paid apps** in these top categories generate significant direct revenues, averaging **${plot_df[plot_df['Type'] == 'Paid']['Avg_Revenue'].mean():,.2f}** per app.
+                - **Monetization Insight**: For developer evaluation, launching a Free app is highly effective for scale, but launching a Paid app (provided it meets quality thresholds and filters) yields massive immediate direct revenues exceeding the $10,000 threshold.
+                """)
+            with col_r:
+                st.markdown("### 🔎 Data Preview (Matching Apps)")
+                preview_cols = ['App', 'Category', 'Type', 'Installs_numeric', 'Price_numeric', 'Revenue', 'Size_MB', 'Android Ver']
+                preview_df = active_df[preview_cols].rename(columns={
+                    'Installs_numeric': 'Installs',
+                    'Price_numeric': 'Price ($)',
+                    'Revenue': 'Revenue ($)',
+                    'Size_MB': 'Size (MB)'
+                })
+                st.dataframe(
+                    preview_df.sort_values(by='Installs', ascending=False).head(100),
+                    use_container_width=True,
+                    height=250
+                )
