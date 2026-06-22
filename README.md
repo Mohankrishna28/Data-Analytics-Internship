@@ -21,6 +21,19 @@ This repository is organized into six self-contained task folders (`Task-1` thro
 
 ---
 
+## 🚀 Unified Multi-Task Streamlit Dashboard
+
+For ease of submission and online deployment, a **Consolidated Streamlit Dashboard** containing all six tasks has been built at the root of the workspace. This unified interface features a sidebar navigation panel to switch between tasks and includes the timezone bypass simulation clocks to view the locked dashboards instantly.
+
+### How to Run the Consolidated Dashboard
+Run the following command at the root of the workspace directory:
+```bash
+streamlit run app.py
+```
+This launches the app on `http://localhost:8501`. Navigate the pages in the sidebar to review each task.
+
+---
+
 ## ⚙️ Environment Setup & Installation
 
 To run any of the notebooks or dashboards, ensure you have **Python 3.8+** installed. You can install all required dependencies by running:
