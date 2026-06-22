@@ -365,7 +365,7 @@ elif page == "Task 1: Category-wise app install analysis with interactive dashbo
         f_installs = merged['Installs'] > 50000
         f_name = ~merged['App'].str.contains('[Ss]', case=True, regex=True, na=False)
         
-        filtered = merged[f_rating & f_cat & f_reviews & f_subj & f_installs & f_name].copy()
+        filtered_all = merged[f_rating & f_cat & f_reviews & f_subj & f_installs & f_name].copy()
         
         # Localizations map
         category_translations_t1 = {
@@ -379,7 +379,18 @@ elif page == "Task 1: Category-wise app install analysis with interactive dashbo
             'SOCIAL': 'SOCIAL',
             'EVENTS': 'EVENTS'
         }
-        filtered['Category_Translated'] = filtered['Category'].map(category_translations_t1).fillna(filtered['Category'])
+        filtered_all['Category_Translated'] = filtered_all['Category'].map(category_translations_t1).fillna(filtered_all['Category'])
+        
+        # Group by App to get unique apps for display and plotting
+        filtered = filtered_all.groupby('App').agg({
+            'Category': 'first',
+            'Rating': 'first',
+            'Reviews': 'first',
+            'Installs': 'first',
+            'Size': 'first',
+            'Sentiment_Subjectivity': 'mean',
+            'Category_Translated': 'first'
+        }).reset_index()
         
         # Bubble chart
         st.subheader("📊 Bubble Plot: Size vs Average Rating")
@@ -737,7 +748,8 @@ elif page == "Task 3: Cumulative installs trend analysis using stacked area visu
             resampled_list = []
             for cat in grouped_trend['Category'].unique():
                 cat_df = grouped_trend[grouped_trend['Category'] == cat].set_index('YearMonth')
-                cat_df = cat_df.reindex(all_months, fill_value=0)
+                cat_df = cat_df.reindex(all_months)
+                cat_df = cat_df.fillna(0)
                 cat_df['Category'] = cat
                 cat_df = cat_df.reset_index().rename(columns={'index': 'YearMonth'})
                 cat_df['Cumulative_Installs'] = cat_df['Installs'].cumsum()
