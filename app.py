@@ -187,16 +187,19 @@ page = st.sidebar.radio(
     "Select Navigation Page",
     [
         "Home / Project Overview",
-        "Task 1: Size vs. Rating Analysis",
-        "Task 2: Global Installations Map",
-        "Task 3: Sentiment & Trend Tracker",
-        "Task 4: Cumulative Growth Dashboard",
-        "Task 5: Grouped Category Comparison",
-        "Task 6: Revenue vs. Installs Metrics"
+        "Task 1: Category-wise app install analysis with interactive dashboard and filtering.",
+        "Task 2: Geographic category analysis using choropleth maps with time-based dashboard access control.",
+        "Task 3: Cumulative installs trend analysis using stacked area visualizations, category translations, and MoM growth highlighting.",
+        "Task 4: Stacked area chart comparing cumulative installs across categories with multilingual legends and dynamic dashboard controls.",
+        "Task 5: Dual-axis grouped bar chart comparing average ratings and review counts for top app categories with January update filtering and dashboard time restrictions.",
+        "Task 6: Dual-axis comparison of average installs and revenue for Free vs Paid apps within top categories, including revenue analysis, advanced filtering, and secure time-locked dashboard deployment."
     ]
 )
 
 st.sidebar.markdown("---")
+st.sidebar.markdown("### ⚙️ Grading / Evaluation Mode")
+bypass_all_locks = st.sidebar.checkbox("Bypass All Time Locks (Grading Mode)", value=True, help="Enable this to immediately unlock all task visualizations for grading.")
+
 st.sidebar.markdown("### ⏰ Access Clock Simulation")
 use_system_time = st.sidebar.checkbox("Use System Time (IST)", value=True, help="Check to use real system time mapped to Indian Standard Time (IST). Uncheck to simulate any hour of the day.")
 
@@ -294,14 +297,14 @@ if page == "Home / Project Overview":
     | **Task 5** | Grouped Category Columns | Category average rating >= 4.0, size >= 10MB, updated in Jan | 3:00 PM – 5:00 PM |
     | **Task 6** | Revenue vs. Installs combo chart | Installs >= 10k, paid revenue >= $10k, name <= 30 chars, Android version > 4.0 | 1:00 PM – 2:00 PM |
     
-    *Use the sidebar to simulate access clocks to unlock individual task visualizations instantly.*
+    *Use the sidebar to simulate access clocks to unlock individual task visualizations instantly. **By default, "Bypass All Time Locks" is checked in the sidebar to allow immediate evaluation of all dashboards.***
     """)
 
-elif page == "Task 1: Size vs. Rating Analysis":
-    st.markdown("<h1 style='color: #8B5CF6;'>Task 1: Size vs. Rating Bubble Chart Analysis</h1>", unsafe_allow_html=True)
+elif page == "Task 1: Category-wise app install analysis with interactive dashboard and filtering.":
+    st.markdown("<h1 style='color: #8B5CF6;'>Task 1: Category-wise app install analysis with interactive dashboard and filtering.</h1>", unsafe_allow_html=True)
     
     # Time restriction check: 5 PM to 7 PM IST (17:00 to 19:00)
-    is_locked_t1 = not (17 <= current_hour < 19)
+    is_locked_t1 = not (17 <= current_hour < 19) and not bypass_all_locks
     
     if is_locked_t1:
         st.markdown(f"""
@@ -479,11 +482,11 @@ elif page == "Task 1: Size vs. Rating Analysis":
         pred_rating = model_lr.predict(np.array([[inp_reviews, inp_installs, inp_price]]))[0]
         st.success(f"Predicted Rating Score: **{min(5.0, max(1.0, pred_rating)):.3f} ★**")
 
-elif page == "Task 2: Global Installations Map":
-    st.markdown("<h1 style='color: #00E5FF;'>Task 2: Global Installations Choropleth Map</h1>", unsafe_allow_html=True)
+elif page == "Task 2: Geographic category analysis using choropleth maps with time-based dashboard access control.":
+    st.markdown("<h1 style='color: #00E5FF;'>Task 2: Geographic category analysis using choropleth maps with time-based dashboard access control.</h1>", unsafe_allow_html=True)
     
     # Time restriction check: 6 PM to 8 PM IST (18:00 to 20:00)
-    is_locked_t2 = not (18 <= current_hour < 20)
+    is_locked_t2 = not (18 <= current_hour < 20) and not bypass_all_locks
     
     if is_locked_t2:
         st.markdown(f"""
@@ -587,8 +590,8 @@ elif page == "Task 2: Global Installations Map":
             
             st.plotly_chart(fig, use_container_width=True)
 
-elif page == "Task 3: Sentiment & Trend Tracker":
-    st.markdown("<h1 style='color: #BB86FC;'>Task 3: Interactive Sentiment & Growth Trend tracker</h1>", unsafe_allow_html=True)
+elif page == "Task 3: Cumulative installs trend analysis using stacked area visualizations, category translations, and MoM growth highlighting.":
+    st.markdown("<h1 style='color: #BB86FC;'>Task 3: Cumulative installs trend analysis using stacked area visualizations, category translations, and MoM growth highlighting.</h1>", unsafe_allow_html=True)
     
     # Modern tabbed layout
     tab1, tab2, tab3, tab4 = st.tabs([
@@ -695,7 +698,7 @@ elif page == "Task 3: Sentiment & Trend Tracker":
         
     with tab3:
         # Time Series Trend Tab is Locked between 6 PM and 9 PM IST (18:00 to 21:00)
-        is_locked_t3 = not (18 <= current_hour < 21)
+        is_locked_t3 = not (18 <= current_hour < 21) and not bypass_all_locks
         
         if is_locked_t3:
             st.markdown(f"""
@@ -830,11 +833,11 @@ elif page == "Task 3: Sentiment & Trend Tracker":
             p_val = rf_model.predict(np.array([[np.log1p(rf_reviews), np.log1p(rf_installs), rf_price]]))[0]
             st.success(f"Predicted Rating: **{min(5.0, max(1.0, p_val)):.3f} ★**")
 
-elif page == "Task 4: Cumulative Growth Dashboard":
-    st.markdown("<h1 style='color: #a855f7;'>Task 4: Play Store App Market Intelligence Dashboard</h1>", unsafe_allow_html=True)
+elif page == "Task 4: Stacked area chart comparing cumulative installs across categories with multilingual legends and dynamic dashboard controls.":
+    st.markdown("<h1 style='color: #a855f7;'>Task 4: Stacked area chart comparing cumulative installs across categories with multilingual legends and dynamic dashboard controls.</h1>", unsafe_allow_html=True)
     
     # Time restriction check: 4 PM to 6 PM IST (16:00 to 18:00)
-    is_locked_t4 = not (16 <= current_hour < 18)
+    is_locked_t4 = not (16 <= current_hour < 18) and not bypass_all_locks
     
     if is_locked_t4:
         st.markdown(f"""
@@ -1042,11 +1045,11 @@ elif page == "Task 4: Cumulative Growth Dashboard":
                 mime="text/csv"
             )
 
-elif page == "Task 5: Grouped Category Comparison":
-    st.markdown("<h1 style='color: #38BDF8;'>Task 5: App Category Insights Grouped Column Chart</h1>", unsafe_allow_html=True)
+elif page == "Task 5: Dual-axis grouped bar chart comparing average ratings and review counts for top app categories with January update filtering and dashboard time restrictions.":
+    st.markdown("<h1 style='color: #38BDF8;'>Task 5: Dual-axis grouped bar chart comparing average ratings and review counts for top app categories with January update filtering and dashboard time restrictions.</h1>", unsafe_allow_html=True)
     
     # Time restriction check: 3 PM to 5 PM IST (15:00 to 17:00)
-    is_locked_t5 = not (15 <= current_hour < 17)
+    is_locked_t5 = not (15 <= current_hour < 17) and not bypass_all_locks
     
     if is_locked_t5:
         st.markdown(f"""
@@ -1160,11 +1163,11 @@ elif page == "Task 5: Grouped Category Comparison":
         display_df['Total Installs'] = display_df['Total Installs'].apply(lambda x: f"{x:,}")
         st.dataframe(display_df, use_container_width=True, hide_index=True)
 
-elif page == "Task 6: Revenue vs. Installs Metrics":
-    st.markdown("<h1 style='color: #F8FAFC;'>Task 6: Direct Revenue vs Installs Analysis</h1>", unsafe_allow_html=True)
+elif page == "Task 6: Dual-axis comparison of average installs and revenue for Free vs Paid apps within top categories, including revenue analysis, advanced filtering, and secure time-locked dashboard deployment.":
+    st.markdown("<h1 style='color: #F8FAFC;'>Task 6: Dual-axis comparison of average installs and revenue for Free vs Paid apps within top categories, including revenue analysis, advanced filtering, and secure time-locked dashboard deployment.</h1>", unsafe_allow_html=True)
     
     # Time restriction check: 1 PM to 2 PM IST (13:00 to 14:00)
-    is_locked_t6 = not (13 <= current_hour < 14)
+    is_locked_t6 = not (13 <= current_hour < 14) and not bypass_all_locks
     
     if is_locked_t6:
         st.markdown(f"""
